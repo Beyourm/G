@@ -1,0 +1,293 @@
+<script>
+  // رابط Apps Script (تم نقله هنا حسب طلبك)
+  const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxGeQ1UMreakJe3X6GzBwzBzpHzHmEqTllv__US14CoUIf2damdO7hQEyo6pvFS88v7A/exec";
+</script>
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ تحقق من عروضك الخاصة الآن</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* تغيير اللون الأساسي لزيادة الفخامة (Deep Blue) */
+      --primary-color: #1a5276; 
+      --success-color: #2ecc71;
+      --error-color: #e74c3c;
+      /* لون زر إعادة المحاولة (أخضر فاتح) */
+      --warning-color: #27ae60; 
+      /* تغيير بسيط في تدرج الخلفية لجعلها أنعم */
+      --background-gradient: linear-gradient(135deg, #ffffff, #eaf2f8); 
+      --text-color: #34495e; /* لون نص غامق جديد */
+    }
+    body {
+      /* استخدام خط Tajawal الجديد */
+      font-family: 'Tajawal', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--background-gradient);
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15); /* ظل أقوى */
+      /* زيادة العرض لـ 600px للمحاذاة الأوسع */
+      max-width: 90%;
+      width: 600px; 
+    }
+    .logo-img {
+        max-width: 120px; /* حجم مناسب للشعار */
+        height: auto;
+        margin-bottom: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 8px; /* لمسة جمالية للشعار */
+    }
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid var(--primary-color);
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px auto;
+      display: block;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg);}
+      100% { transform: rotate(360deg);}
+    }
+    .message {
+      font-size: 22px; /* زيادة حجم الخط للرسائل */
+      margin-bottom: 20px;
+      color: var(--text-color);
+      font-weight: 800; /* استخدام وزن خط أثقل */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .message i {
+      margin-left: 10px;
+      font-size: 26px; /* زيادة حجم الأيقونات */
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 12px;
+      background: #ddd;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      display: none;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: var(--success-color);
+      border-radius: 6px;
+      transition: width 0.1s linear;
+    }
+    #retryBtn {
+      display: none;
+      padding: 10px 25px;
+      background: var(--warning-color); 
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 15px;
+      transition: background 0.3s, transform 0.2s;
+      font-weight: 700;
+    }
+    #retryBtn:hover {
+      background: #2ecc71; 
+      transform: translateY(-2px);
+    }
+    .offers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+    }
+    .offer-card {
+      padding: 18px; /* زيادة التباعد الداخلي */
+      background: var(--primary-color);
+      color: #fff;
+      border-radius: 10px; /* جعل الحواف أكثر نعومة */
+      cursor: pointer;
+      font-size: 19px; /* حجم خط أكبر */
+      font-weight: 700;
+      text-align: right;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      border-bottom: 5px solid #154360; /* تدرج أغمق للحد */
+      position: relative; 
+      padding-right: 55px; /* مساحة للأيقونة */
+    }
+    .offer-card:before {
+        content: '💎'; /* أيقونة ماسية لتمييز العرض */
+        position: absolute;
+        left: 15px;
+        font-size: 28px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.9;
+    }
+    .offer-card:hover {
+      background: #1a5276;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* ظل أقوى عند التحوم */
+    }
+    .offer-description {
+      font-size: 15px; /* زيادة حجم الوصف قليلاً */
+      font-weight: 500; /* استخدام وزن متوسط */
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+    .icon-sad:before { content: '🙁'; }
+    .icon-warn:before { content: '⚠️'; }
+    .icon-success:before { content: '✅'; }
+    .icon-gift:before { content: '🎁'; }
+    .icon-choose:before { content: '👆'; } 
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <img src="images/photo.jpg" alt="Logo" class="logo-img">
+    
+    <div class="loader"></div>
+    <div class="message">جارٍ التحقق من العروض<span id="dots">...</span></div>
+    <div class="progress-bar-container">
+      <div class="progress-bar"></div>
+    </div>
+    <div id="offersList" class="offers-list"></div>
+    <button id="retryBtn">إعادة المحاولة</button>
+  </div>
+
+  <script>
+    // **تم إزالة تعريف APP_SCRIPT_URL من هنا لأنه تم نقله إلى بداية الملف**
+
+    const loader = document.querySelector('.loader');
+    const messageDiv = document.querySelector('.message');
+    const progressBarContainer = document.querySelector('.progress-bar-container');
+    const progressBar = document.querySelector('.progress-bar');
+    const retryBtn = document.getElementById('retryBtn');
+    const offersListDiv = document.getElementById('offersList');
+    let dotsSpan = null; 
+
+    let dotInterval = null;
+
+    function startDotAnimation() {
+      if (dotInterval) clearInterval(dotInterval);
+      dotsSpan = document.getElementById('dots');
+      let dotCount = 0;
+      dotInterval = setInterval(() => {
+        dotCount = (dotCount + 1) % 4;
+        if(dotsSpan) dotsSpan.textContent = '.'.repeat(dotCount);
+      }, 500);
+    }
+
+    function stopDotAnimation() {
+        if (dotInterval) {
+            clearInterval(dotInterval);
+            dotInterval = null;
+        }
+    }
+
+    async function checkOffer() {
+      retryBtn.style.display = 'none';
+      loader.style.display = 'block';
+      progressBarContainer.style.display = 'none';
+      messageDiv.style.color = 'var(--text-color)'; /* استخدام لون النص الجديد */
+      messageDiv.innerHTML = 'جارٍ التحقق من العروض<span id="dots">...</span>';
+      offersListDiv.innerHTML = '';
+      startDotAnimation();
+
+      try {
+        const response = await fetch(APP_SCRIPT_URL);
+        const offers = await response.json();
+
+        let activeOffers = offers.filter(o => (o.activ || "").toUpperCase() === "Y")
+          .map(o => ({
+            title: o.title,
+            link: `Offer.html?title=${encodeURIComponent(o.title)}`,
+            description: o.description || ''
+          }));
+
+        loader.style.display = 'none';
+        stopDotAnimation();
+
+
+        if(activeOffers.length === 0){
+          // محتوى تفاعلي جديد
+          messageDiv.innerHTML = '<i class="icon-sad"></i> للأسف، **لا توجد عروض نشطة حالياً**. نعدك بالجديد قريباً، تفقدنا مرة أخرى!';
+          messageDiv.style.color = 'var(--error-color)';
+        } else if(activeOffers.length === 1){
+          // ** تنفيذ الانتقال التلقائي **
+          startCountdown(activeOffers[0].title, activeOffers[0].link);
+        } else {
+          // محتوى تفاعلي جديد
+          messageDiv.innerHTML = '<i class="icon-choose"></i> **تهانينا!** توجد **عدة عروض حصرية** لك، اختر العرض الذي يناسبك الآن:';
+          activeOffers.forEach(offer => {
+            const card = document.createElement('div');
+            card.className = 'offer-card';
+            card.innerHTML = `
+              <div>${offer.title}</div>
+              ${offer.description ? `<div class="offer-description">${offer.description}</div>` : ''}
+            `;
+            card.onclick = () => window.location.href = offer.link;
+            offersListDiv.appendChild(card);
+          });
+        }
+
+      } catch(err) {
+        console.error(err);
+        loader.style.display = 'none';
+        progressBarContainer.style.display = 'none';
+        // محتوى تفاعلي جديد
+        messageDiv.innerHTML = '<i class="icon-warn"></i> عذراً، حدث خطأ أثناء الاتصال بالخادم. يرجى التحقق من اتصالك والمحاولة مرة أخرى.'; 
+        messageDiv.style.color = 'var(--warning-color)';
+        retryBtn.style.display = 'inline-block';
+        stopDotAnimation();
+      }
+    }
+
+    // تم تعديل الدالة لتبدأ الانتقال التلقائي برسالة جديدة
+    function startCountdown(offerTitle, offerLink){
+      let seconds = 5;
+      progressBarContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+      messageDiv.innerHTML = `<i class="icon-success"></i> تم التأكيد! عرض "**${offerTitle}**" هو فرصتك الذهبية. **سيتم نقلك خلال <span id="countdownSec">${seconds}</span> ثواني** للاستفادة منه!`;
+      messageDiv.style.color = 'var(--success-color)';
+
+      const countdownSecSpan = document.getElementById('countdownSec');
+
+      const interval = setInterval(() => {
+        seconds--;
+        progressBar.style.width = `${((5-seconds)/5)*100}%`;
+
+        if(seconds > 0){
+          countdownSecSpan.textContent = seconds;
+        } else {
+          clearInterval(interval);
+          window.location.href = offerLink;
+        }
+      }, 1000);
+    }
+
+    retryBtn.onclick = checkOffer;
+    checkOffer();
+  </script>
+
+</body>
+</html>
