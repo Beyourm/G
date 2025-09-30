@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const populateCountries = () => {
-        const arabCountries = ["السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "الأردن", "لبنان", "مصر", "المغرب", "تونس", "الجزائر", "العراق", "اليمن", "ليبيا", "فلسطين", "سوريا", "السودان", "جيبوتي", "موريتانيا", "الصومال", "جزر القمر"];
+        const arabCountries = ["السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "الأردن", "لبنان", "مصر", "المغرب", "تونس", ...];
         if (typeof arabCountries !== 'undefined' && Array.isArray(arabCountries)) {
             arabCountries.forEach(country => {
                 const option = document.createElement('option');
@@ -90,11 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             appendToDebugLog(`2. نجاح الجلب وضمان الترميز. تم استلام ${text.length} حرف.`);
             
-            // 3. معالجة بيانات CSV
-            const rows = text.trim().split('\n'); 
+            // 3. معالجة بيانات CSV - تعديل هنا
+            // تنظيف النص من الأحرف غير المرئية أو المشاكل الترميزية
+            const cleanText = text.replace(/[^\t\n\r\u2028\u2029\uFEFFء-ي,\r\n\s"']/g, '');
+            // تقسيم الأسطر باستخدام تعبير نمطي لجميع الحالات
+            const rows = cleanText.trim().split(/\r\n|\n|\r/); 
             appendToDebugLog(`3. تم تقسيم النص بنجاح إلى ${rows.length} صف.`); 
 
-            
             if (rows.length < 2) {
                 const errorMessage = 'خطأ: لم يتم العثور على أسطر بيانات بعد الرؤوس.';
                 coursesListContainer.innerHTML = '<p class="error-message status-error">⚠️ لم يتم العثور على بيانات. (تأكد من GID).</p>';
@@ -110,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstRowData = rows[1] ? rows[1].substring(0, 50) : 'لا يوجد صف ثاني';
             appendToDebugLog(`4. عينة من الصف الثاني (50 حرف): ${firstRowData}`);
 
-
             const missingColumns = requiredColumns.filter(col => !headers.includes(col));
             if (missingColumns.length > 0) {
                 const errorMessage = `خطأ في رؤوس الأعمدة. الأعمدة المفقودة هي: ${missingColumns.join(', ')}.`;
@@ -125,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let vipCoursesFound = 0;
 
             for (let i = 1; i < rows.length; i++) {
-                const rowValues = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
+                const rowValues = rows[i].split(/,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)/); 
                 const course = {};
                 let is_vip_match = false;
                 
@@ -133,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 for (let j = 0; j < headers.length; j++) {
                     const colName = headers[j];
-                    let value = rowValues[j] ? rowValues[j].trim().replace(/^"|"$/g, '') : ''; 
+                    let value = rowValues[j] ? rowValues[j].trim().replace(/^\"|\"$/g, '') : ''; 
                     
                     course[colName] = value;
                     
@@ -156,12 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 coursesMatrix.forEach(course => {
                     const label = document.createElement('label');
                     label.classList.add('course-item');
-                    label.innerHTML = `
-                        <input type="checkbox" name="courses_selected" value="${course.title}" aria-label="${course.title}">
-                        <span class="custom-checkbox"></span>
-                        <span class="course-title"><i class="fa-solid fa-circle-check"></i> ${course.title}</span>
-                        <span class="course-description">${course.heroDescription || ''}</span>
-                    `;
+                    label.innerHTML = `\n                        <input type="checkbox" name="courses_selected" value="${course.title}" aria-label="${course.title}">\n                        <span class="custom-checkbox"></span>\n                        <span class="course-title"><i class="fa-solid fa-circle-check"></i> ${course.title}</span>\n                        <span class="course-description">${course.heroDescription || ''}</span>\n                    `;
                     coursesListContainer.appendChild(label);
                 });
                 
@@ -181,8 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             const finalMessage = `❌ فشل فادح في التحليل/الـ DOM. رسالة الخطأ: ${error.message}`;
             appendToDebugLog(finalMessage, true);
-            coursesListContainer.innerHTML = `<p class="error-message status-error" style="font-weight: bold; padding: 10px; border: 1px solid red; background: #ffebeb;">فشل التحليل. راجع سجل التشخيص.</p>`;
-
+            coursesListContainer.innerHTML = `<p class="error-message status-error" style="font-weight: bold; padding: 10px; border: 1px solid red; background: #ffebeb;">فشل التحليل. ر[...]\n
         } finally {
             if (!courseCheckboxes || courseCheckboxes.length === 0) {
                  submitButton.disabled = true;
@@ -355,7 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submissionMessage.textContent = '❌ حدث خطأ أثناء إرسال البيانات. الرجاء المحاولة مرة أخرى.';
             submissionMessage.style.display = 'block';
             console.error('خطأ في الإرسال:', error.message);
-        } **finally** {
+        } finally {
             submitButton.textContent = 'إرسال التسجيل الآن'; 
             submitButton.disabled = false; 
             submitButton.classList.remove('ready-to-submit'); 
