@@ -66,19 +66,41 @@
       0% { transform: rotate(0deg);}
       100% { transform: rotate(360deg);}
     }
+    /* تعديل الرسالة العامة لإزالة العرض المرن والتحكم في الأجزاء الداخلية */
     .message {
-      font-size: 22px; /* زيادة حجم الخط للرسائل */
+      font-size: 22px; 
       margin-bottom: 20px;
       color: var(--text-color);
-      font-weight: 800; /* استخدام وزن خط أثقل */
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-weight: 800; 
+      display: block; /* تغيير ليتم التحكم به بواسطة المحتوى الداخلي */
+      text-align: center;
     }
     .message i {
       margin-left: 10px;
-      font-size: 26px; /* زيادة حجم الأيقونات */
+      font-size: 26px; 
     }
+    
+    /* تصميم جديد لرسالة العد التنازلي المنظمة */
+    .countdown-message-layout {
+      display: flex;
+      flex-direction: column; /* ترتيب العناصر عمودياً */
+      align-items: center;
+      justify-content: center;
+      font-size: 19px; /* تقليل حجم الخط قليلاً للتحسين */
+      font-weight: 700;
+      line-height: 1.5; /* زيادة تباعد الأسطر */
+    }
+
+    .countdown-message-layout .main-text {
+      margin: 5px 0;
+    }
+
+    .countdown-message-layout i {
+      font-size: 28px; /* حجم الأيقونة */
+      margin-bottom: 5px;
+      margin-left: 0; /* إزالة المسافة الإضافية للأيقونة */
+    }
+    
     .progress-bar-container {
       width: 100%;
       height: 12px;
@@ -158,6 +180,19 @@
     .icon-success:before { content: '✅'; }
     .icon-gift:before { content: '🎁'; }
     .icon-choose:before { content: '👆'; } 
+    
+    /* Media Query: تحسين العرض على شاشات الهاتف (أقل من 600 بكسل) */
+    @media (max-width: 600px) {
+        .container {
+            padding: 20px; /* تقليل التباعد الداخلي للحاوية */
+        }
+        .countdown-message-layout {
+            font-size: 17px; /* تصغير خط رسالة العد التنازلي على الهواتف */
+        }
+        .message {
+            font-size: 19px; /* تصغير خط الرسالة العامة على الهواتف */
+        }
+    }
   </style>
 </head>
 <body>
@@ -208,7 +243,7 @@
       retryBtn.style.display = 'none';
       loader.style.display = 'block';
       progressBarContainer.style.display = 'none';
-      messageDiv.style.color = 'var(--text-color)'; /* استخدام لون النص الجديد */
+      messageDiv.style.color = 'var(--text-color)'; 
       messageDiv.innerHTML = 'جارٍ التحقق من العروض<span id="dots">...</span>';
       offersListDiv.innerHTML = '';
       startDotAnimation();
@@ -262,12 +297,20 @@
       }
     }
 
-    // تم تعديل الدالة لتبدأ الانتقال التلقائي برسالة جديدة
+    // تم تعديل الدالة لتبدأ الانتقال التلقائي برسالة جديدة ومقسمة
     function startCountdown(offerTitle, offerLink){
       let seconds = 5;
       progressBarContainer.style.display = 'block';
       progressBar.style.width = '0%';
-      messageDiv.innerHTML = `<i class="icon-success"></i> تم التأكيد! عرض "**${offerTitle}**" هو فرصتك الذهبية. **سيتم نقلك خلال <span id="countdownSec">${seconds}</span> ثواني** للاستفادة منه!`;
+      
+      // استخدام التنسيق الجديد المقسم لفك الازدحام
+      messageDiv.innerHTML = `
+        <div class="countdown-message-layout">
+          <i class="icon-success"></i>
+          <span class="main-text">تم التأكيد! عرض "**${offerTitle}**" هو فرصتك الذهبية.</span>
+          <span class="main-text">**سيتم نقلك خلال <span id="countdownSec">${seconds}</span> ثواني** للاستفادة منه!</span>
+        </div>
+      `;
       messageDiv.style.color = 'var(--success-color)';
 
       const countdownSecSpan = document.getElementById('countdownSec');
