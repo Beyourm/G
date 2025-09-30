@@ -12,18 +12,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* تغيير اللون الأساسي لزيادة الفخامة (Deep Blue) */
-      --primary-color: #1a5276; 
+      /* اللون الأساسي (أزرق حيوي) */
+      --primary-color: #2980b9; 
       --success-color: #2ecc71;
       --error-color: #e74c3c;
-      /* لون زر إعادة المحاولة (أخضر فاتح) */
       --warning-color: #27ae60; 
-      /* تغيير بسيط في تدرج الخلفية لجعلها أنعم */
-      --background-gradient: linear-gradient(135deg, #ffffff, #eaf2f8); 
-      --text-color: #34495e; /* لون نص غامق جديد */
+      /* خلفية أفتح وأكثر نعومة */
+      --background-gradient: linear-gradient(135deg, #f0f4f7, #ffffff); 
+      --text-color: #34495e; 
     }
     body {
-      /* استخدام خط Tajawal الجديد */
       font-family: 'Tajawal', sans-serif;
       display: flex;
       align-items: center;
@@ -33,28 +31,30 @@
       background: var(--background-gradient);
       text-align: center;
       padding: 20px;
+      /* تحسين قراءة النص العام */
+      line-height: 1.6; 
     }
     .container {
       background: #fff;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15); /* ظل أقوى */
-      /* زيادة العرض لـ 600px للمحاذاة الأوسع */
+      border-radius: 16px; /* زيادة نعومة الحواف */
+      /* ظل ناعم وعميق (Modern Soft Shadow) */
+      box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1); 
       max-width: 90%;
       width: 600px; 
     }
     .logo-img {
-        max-width: 120px; /* حجم مناسب للشعار */
+        max-width: 130px; /* تكبير الشعار قليلاً */
         height: auto;
-        margin-bottom: 20px;
+        margin-bottom: 25px; /* زيادة المسافة بعد الشعار */
         display: block;
         margin-left: auto;
         margin-right: auto;
-        border-radius: 8px; /* لمسة جمالية للشعار */
+        border-radius: 10px; 
     }
     .loader {
       border: 6px solid #f3f3f3;
-      border-top: 6px solid var(--primary-color);
+      border-top: 6px solid var(--primary-color); 
       border-radius: 50%;
       width: 60px;
       height: 60px;
@@ -66,13 +66,12 @@
       0% { transform: rotate(0deg);}
       100% { transform: rotate(360deg);}
     }
-    /* تعديل الرسالة العامة لإزالة العرض المرن والتحكم في الأجزاء الداخلية */
     .message {
       font-size: 22px; 
       margin-bottom: 20px;
       color: var(--text-color);
       font-weight: 800; 
-      display: block; /* تغيير ليتم التحكم به بواسطة المحتوى الداخلي */
+      display: block; 
       text-align: center;
     }
     .message i {
@@ -80,15 +79,14 @@
       font-size: 26px; 
     }
     
-    /* تصميم جديد لرسالة العد التنازلي المنظمة */
     .countdown-message-layout {
       display: flex;
-      flex-direction: column; /* ترتيب العناصر عمودياً */
+      flex-direction: column; 
       align-items: center;
       justify-content: center;
-      font-size: 19px; /* تقليل حجم الخط قليلاً للتحسين */
+      font-size: 20px; /* حجم خط ممتاز */
       font-weight: 700;
-      line-height: 1.5; /* زيادة تباعد الأسطر */
+      line-height: 1.8; /* زيادة تباعد الأسطر لراحة العين */
     }
 
     .countdown-message-layout .main-text {
@@ -96,9 +94,9 @@
     }
 
     .countdown-message-layout i {
-      font-size: 28px; /* حجم الأيقونة */
-      margin-bottom: 5px;
-      margin-left: 0; /* إزالة المسافة الإضافية للأيقونة */
+      font-size: 32px; /* تكبير أيقونة النجاح */
+      margin-bottom: 8px;
+      margin-left: 0; 
     }
     
     .progress-bar-container {
@@ -120,59 +118,61 @@
     }
     #retryBtn {
       display: none;
-      padding: 10px 25px;
+      padding: 12px 30px; /* تكبير الزر قليلاً */
       background: var(--warning-color); 
       color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px; /* حواف أنعم */
       cursor: pointer;
-      font-size: 16px;
+      font-size: 17px; 
       margin-top: 15px;
-      transition: background 0.3s, transform 0.2s;
+      transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
       font-weight: 700;
     }
     #retryBtn:hover {
       background: #2ecc71; 
       transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* إضافة ظل عند التحويم */
     }
     .offers-list {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 18px; /* زيادة الفراغ بين البطاقات */
       width: 100%;
     }
     .offer-card {
-      padding: 18px; /* زيادة التباعد الداخلي */
+      padding: 20px; /* زيادة التباعد الداخلي */
       background: var(--primary-color);
       color: #fff;
-      border-radius: 10px; /* جعل الحواف أكثر نعومة */
+      border-radius: 12px; /* حواف أنعم */
       cursor: pointer;
-      font-size: 19px; /* حجم خط أكبر */
+      font-size: 20px; 
       font-weight: 700;
       text-align: right;
-      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
-      border-bottom: 5px solid #154360; /* تدرج أغمق للحد */
+      transition: transform 0.2s, box-shadow 0.3s, background 0.2s;
+      border-bottom: 5px solid #2471a3; /* تدرج أغمق */
       position: relative; 
-      padding-right: 55px; /* مساحة للأيقونة */
+      padding-right: 60px; 
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* ظل البطاقة */
     }
     .offer-card:before {
-        content: '💎'; /* أيقونة ماسية لتمييز العرض */
+        content: '💎'; 
         position: absolute;
-        left: 15px;
-        font-size: 28px;
+        left: 20px; /* تعديل موقع الأيقونة */
+        font-size: 32px; /* تكبير أيقونة الماس */
         top: 50%;
         transform: translateY(-50%);
         opacity: 0.9;
     }
     .offer-card:hover {
-      background: #1a5276;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25); /* ظل أقوى عند التحوم */
+      background: #2471a3;
+      transform: translateY(-5px); /* تأثير حركة أقوى */
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* ظل أقوى عند التحويم */
     }
     .offer-description {
-      font-size: 15px; /* زيادة حجم الوصف قليلاً */
-      font-weight: 500; /* استخدام وزن متوسط */
-      margin-top: 8px;
+      font-size: 16px; /* زيادة حجم الوصف قليلاً */
+      font-weight: 500; 
+      margin-top: 10px; /* زيادة المسافة */
       opacity: 0.9;
     }
     .icon-sad:before { content: '🙁'; }
@@ -181,16 +181,15 @@
     .icon-gift:before { content: '🎁'; }
     .icon-choose:before { content: '👆'; } 
     
-    /* Media Query: تحسين العرض على شاشات الهاتف (أقل من 600 بكسل) */
     @media (max-width: 600px) {
         .container {
-            padding: 20px; /* تقليل التباعد الداخلي للحاوية */
+            padding: 20px; 
         }
         .countdown-message-layout {
-            font-size: 17px; /* تصغير خط رسالة العد التنازلي على الهواتف */
+            font-size: 18px; 
         }
         .message {
-            font-size: 19px; /* تصغير خط الرسالة العامة على الهواتف */
+            font-size: 20px; 
         }
     }
   </style>
@@ -210,8 +209,7 @@
   </div>
 
   <script>
-    // **تم إزالة تعريف APP_SCRIPT_URL من هنا لأنه تم نقله إلى بداية الملف**
-
+    // **كود الجافاسكربت لم يتغير لضمان ثبات الوظائف**
     const loader = document.querySelector('.loader');
     const messageDiv = document.querySelector('.message');
     const progressBarContainer = document.querySelector('.progress-bar-container');
