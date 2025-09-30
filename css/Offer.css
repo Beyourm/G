@@ -1,0 +1,344 @@
+/* Offer.css */
+
+/* 1. تحسين متغيرات الألوان والخطأ */
+:root {
+  --primary-color: #00BFA5; 
+  --primary-darker: #00A38D;
+  --secondary-color: #383838;
+  --light-bg: #F0F2F5; 
+  --light-accent: #E0FFF0; 
+  --error-color: #E74C3C; /* أحمر داكن للخطأ */
+  --error-light: #FFECEC; /* خلفية فاتحة للخطأ */
+  --success-color: #155724; 
+  --success-bg: #D4EDDA; 
+  --border-color: #DDD;
+  --border-radius: 12px;
+}
+
+body {
+  font-family: 'Cairo', sans-serif;
+  background-color: var(--light-bg);
+  margin: 0;
+  padding: 0;
+  color: var(--secondary-color);
+}
+
+.container {
+  max-width: 680px; 
+  margin: 50px auto;
+  background-color: #fff;
+  padding: 40px 35px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  position: relative;
+  min-height: 500px; 
+}
+
+.logo {
+  display: block;
+  margin: 0 auto 25px;
+  width: 140px;
+}
+
+h1 {
+  text-align: center;
+  color: var(--primary-color); 
+  margin-bottom: 10px;
+  font-weight: 900;
+  font-size: 28px;
+}
+
+/* النص المعزز */
+p.description {
+  text-align: center;
+  margin-bottom: 35px;
+  font-size: 17px;
+  color: #333; 
+  line-height: 1.6;
+  font-weight: 700; 
+}
+
+/* 2. تحسين حقول الإدخال */
+form label {
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: var(--secondary-color);
+  font-size: 16px;
+}
+
+.input-group {
+    position: relative;
+    /* تحسين الهامش للحقول العلوية */
+    margin-bottom: 15px;
+}
+
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px; 
+    transform: translateY(-50%);
+    color: #AAA;
+    font-size: 16px;
+    pointer-events: none;
+    transition: color 0.3s;
+}
+
+form input, form select, form textarea {
+  width: 100%;
+  padding: 14px 15px;
+  padding-right: 40px; /* مساحة للأيقونة */
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 15px;
+  outline: none;
+  box-sizing: border-box;
+  background-color: #FAFAFA;
+  transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+  font-family: 'Cairo', sans-serif; 
+}
+
+/* التركيز على الحقل */
+form input:focus, form select:focus, form textarea:focus {
+  border-color: var(--primary-color); 
+  box-shadow: 0 0 8px rgba(0, 191, 165, 0.5); 
+  background-color: #FFF;
+}
+form input:focus ~ .input-icon, form select:focus ~ .input-icon {
+    color: var(--primary-color);
+}
+
+
+/* 3. تنظيم الحقول المرنة */
+.flex-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px; /* تقليل الفراغ العلوي */
+}
+.flex-group > div {
+    flex: 1;
+    min-width: 0;
+}
+.flex-group label {
+    margin-top: 0;
+}
+
+/* 4. رسائل الخطأ المحسّنة (Accessibility + UX) */
+.error-message {
+    color: var(--error-color);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: var(--error-light);
+    display: none;
+    transition: all 0.2s ease;
+}
+
+/* حالة الخطأ على الحقل نفسه */
+input.input-error, select.input-error {
+    border-color: var(--error-color) !important;
+    box-shadow: 0 0 5px rgba(231, 76, 60, 0.5) !important;
+}
+
+/* 5. تحسين زر الإرسال */
+form button {
+  width: 100%;
+  padding: 18px;
+  background-color: var(--primary-color); 
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 191, 165, 0.4);
+  margin-top: 25px;
+}
+
+form button:hover:not(:disabled) {
+  background-color: var(--primary-darker); 
+  box-shadow: 0 6px 20px rgba(0, 191, 165, 0.6);
+  transform: translateY(-2px);
+}
+
+/* تأثير التحديد البصري لزر الإرسال عند جاهزية النموذج (جديد) */
+form button.ready-to-submit {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+}
+
+form button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 191, 165, 0.4);
+}
+
+form button:disabled {
+    background-color: #CCC;
+    cursor: not-allowed;
+    box-shadow: none;
+    animation: none;
+}
+
+/* 6. تحسين قائمة الدورات (Interaction + A11y) */
+.courses-selection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.course-item {
+  display: block;
+  cursor: pointer;
+  background-color: #FFF;
+  /* أبعاد أكبر لـ Touch Friendly */
+  padding: 12px; 
+  min-height: 44px; 
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  transition: all 0.25s ease-in-out; /* حركة سلسة */
+  font-weight: 600;
+  font-size: 15px;
+  position: relative;
+}
+
+.course-item:hover {
+    border-color: #A0EACF; 
+    background-color: #F0FFF9;
+    transform: scale(1.02); /* تأثير التكبير */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.course-item:active {
+    transform: scale(1.0);
+    box-shadow: none;
+}
+
+.course-item input[type="checkbox"] {
+    /* ... (تبقى مخفية) ... */
+}
+
+/* حالة التحديد */
+.course-item.is-selected {
+    border-color: var(--primary-color);
+    background-color: var(--light-accent);
+}
+.course-item.is-selected .course-title {
+    color: var(--primary-darker);
+    font-weight: 700;
+}
+.course-item.is-selected .course-title i {
+    color: var(--primary-darker);
+}
+
+.course-title {
+    display: flex;
+    align-items: center;
+    line-height: 1.4;
+}
+
+.course-title i {
+    margin-left: 8px;
+    color: var(--primary-color); 
+    font-size: 16px;
+    transition: color 0.2s;
+}
+.course-description { /* وصف الدورة الجديد */
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: #666;
+    margin-top: 3px;
+    padding-right: 25px; /* لمحاذاة النص */
+}
+
+
+/* 7. رسائل الحالة والنجاح */
+.selection-status {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+  background-color: #FFFACD; 
+  color: #9C6500; 
+  border: 1px solid #FFE066;
+}
+
+.status-success {
+  background-color: var(--success-bg); 
+  color: var(--success-color); 
+  border: 1px solid #C3E6CB;
+}
+
+.status-error {
+    background-color: #F8D7DA; 
+    color: #721C24; 
+    border-color: #F5C6CB;
+}
+
+.whatsapp-prompt {
+    padding: 15px;
+    margin-top: 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 14px;
+    background-color: #E0FFF9; /* أفتح من الـ Accent */
+    color: var(--primary-darker); 
+    border: 1px solid var(--primary-color);
+}
+
+/* 8. مؤشر التحميل (جديد) */
+.loading-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    color: var(--primary-color);
+    border-radius: 16px;
+    z-index: 10;
+}
+
+
+/* 9. Responsive */
+@media(max-width: 768px) {
+  .container {
+    margin: 20px;
+    padding: 25px 20px;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  p.description {
+    font-size: 15px;
+  }
+  /* يتم تحويل التخطيط الأفقي إلى عمودي في الشاشات الصغيرة */
+  .flex-group {
+      flex-direction: column;
+      gap: 0;
+  }
+  .flex-group > div {
+      margin-bottom: 0;
+  }
+  /* زيادة حجم العناصر اللمسية */
+  form input, form select, form textarea, form button, .course-item {
+      padding: 16px 15px;
+  }
+}
