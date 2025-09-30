@@ -1,4 +1,4 @@
-// Offer.js - الإصدار النهائي (مع ضمان الترميز UTF-8)
+// Offer.js - الإصدار النهائي (مع ضمان الترميز UTF-8) + تحسين معالجة الأسطر والأحرف الخفية
 
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbweX983lj4xsTDLo6C64usEcnbFmLST2aQ4v79zjKgIv2v5zGAJERurt_eLXf58dZhtIw/exec'; 
 const INSTITUTION_WHATSAPP_NUMBER = '967778185189';
@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // 2. دوال مساعدة وإدارية
-    // ... (buildWhatsappURL و populateCountries تبقى كما هي) ...
     const buildWhatsappURL = (dataObj, coursesString, coursesCount) => {
         let messageBody = `مرحباً مؤسسة كن أنت، أرجو تأكيد اشتراكي في عرض VIP. هذه بيانات التسجيل المرسلة عبر النموذج:`;
         for (const [key, value] of Object.entries(dataObj)) {
@@ -43,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const populateCountries = () => {
-        const arabCountries = ["السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "الأردن", "لبنان", "مصر", "المغرب", "تونس", "الجزائر", "العراق", "اليمن", "ليبيا", "فلسطين", "سوريا", "السودان", "جيبوتي", "موريتانيا", "الصومال", "جزر القمر"];
+        const arabCountries = ["السعودية", "الإمارات", "الكويت", "قطر", "البحرين", "عمان", "الأردن", "لبنان", "مصر", "المغرب", "تونس", "الجزائر", "العراق", "سوريا", "ليبيا", "اليمن", "فلسطين", "موريتانيا", "جيبوتي", "الصومال", "جزر القمر"];
         if (typeof arabCountries !== 'undefined' && Array.isArray(arabCountries)) {
             arabCountries.forEach(country => {
                 const option = document.createElement('option');
@@ -53,104 +52,104 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     };
-    
+
     /**
      * يجلب قائمة الدورات من Google Sheet ويولد عناصر HTML.
+     * تم تحسين معالجة الأسطر والأحرف الخفية لتفادي الفشل الصامت.
      */
     const generateCoursesList = async () => {
-        
         const PUBLISHED_SHEET_ID = '2PACX-1vR0xJG_95MQb1Dwqzg0Ath0_5RIyqdEoHJIW35rBnW8qy17roXq7-xqyCPZmGx2n3e1aj4jY1zkbRa-';
-        // سنعود لـ GID الأساسي الذي أرسلته أنت، وهو الأصح للتبويبة الثانية
         const GID = '1511305260'; 
-        const COURSES_API_URL = 
-            `https://docs.google.com/spreadsheets/d/e/${PUBLISHED_SHEET_ID}/pub?gid=${GID}&single=true&output=csv`;
+        const COURSES_API_URL = `https://docs.google.com/spreadsheets/d/e/${PUBLISHED_SHEET_ID}/pub?gid=${GID}&single=true&output=csv`;
 
         coursesListContainer.innerHTML = '<div class="loading-courses">جاري تحميل الدورات... <i class="fa-solid fa-spinner fa-spin"></i></div>';
         submitButton.disabled = true;
 
         try {
             appendToDebugLog(`1. بدء الجلب من: GID=${GID}`);
-            
             const response = await fetch(COURSES_API_URL); 
-            
             if (!response.ok) {
                 const errorMessage = `فشل الاتصال: حالة السيرفر ${response.status}.`;
                 appendToDebugLog(errorMessage, true);
                 throw new Error(errorMessage);
             }
-            
-            // 🚨 التعديل الحاسم هنا: قراءة البيانات كـ Blob ثم قراءتها كـ UTF-8
+
+            // قراءة البيانات كـ Blob ثم قراءتها كـ UTF-8
             const blob = await response.blob();
             const text = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = reject;
-                reader.readAsText(blob, 'UTF-8'); // فرض استخدام ترميز UTF-8
+                reader.readAsText(blob, 'UTF-8');
             });
 
             appendToDebugLog(`2. نجاح الجلب وضمان الترميز. تم استلام ${text.length} حرف.`);
-            
-            // 3. معالجة بيانات CSV
-            const rows = text.trim().split('\n'); 
+
+            // تنظيف النص من BOM وأحرف مخفية وفواصل غير قياسية
+            const cleanText = text
+                .replace(/[\uFEFF\u200B\u200E\u200F]/g, '')
+                .replace(/\0/g, '');
+
+            // سجل عينة من أول 100 حرف للتشخيص
+            appendToDebugLog(`نص CSV بعد التنظيف (أول 100 حرف): ${cleanText.substring(0, 100)}`);
+
+            // تقسيم الأسطر بشكل شامل وتصفية الأسطر الفارغة
+            const rows = cleanText.trim().split(/\r\n|\n|\r/).filter(row => row.trim().length > 0);
+
             appendToDebugLog(`3. تم تقسيم النص بنجاح إلى ${rows.length} صف.`); 
 
-            
             if (rows.length < 2) {
                 const errorMessage = 'خطأ: لم يتم العثور على أسطر بيانات بعد الرؤوس.';
                 coursesListContainer.innerHTML = '<p class="error-message status-error">⚠️ لم يتم العثور على بيانات. (تأكد من GID).</p>';
                 appendToDebugLog(errorMessage, true);
-                 return;
+                return;
             }
 
             // الصف الأول هو رؤوس الأعمدة
             const headers = rows[0].split(',').map(header => header.trim().replace(/"/g, ''));
             const requiredColumns = ['id', 'title', 'heroDescription', 'is_vip']; 
-            
-            // 🚨 نقطة تشخيص حرجة: سنعرض جزء من البيانات للتأكد من أنها لم تُفسَد بالترميز
+
+            // نقطة تشخيص حرجة: جزء من الصف الثاني
             const firstRowData = rows[1] ? rows[1].substring(0, 50) : 'لا يوجد صف ثاني';
             appendToDebugLog(`4. عينة من الصف الثاني (50 حرف): ${firstRowData}`);
-
 
             const missingColumns = requiredColumns.filter(col => !headers.includes(col));
             if (missingColumns.length > 0) {
                 const errorMessage = `خطأ في رؤوس الأعمدة. الأعمدة المفقودة هي: ${missingColumns.join(', ')}.`;
-                 coursesListContainer.innerHTML = `<p class="error-message status-error">❌ ${errorMessage}</p>`;
+                coursesListContainer.innerHTML = `<p class="error-message status-error">❌ ${errorMessage}</p>`;
                 appendToDebugLog(errorMessage, true);
-                 return;
+                return;
             }
-            
+
             appendToDebugLog("5. جميع الأعمدة المطلوبة موجودة. بدء الفلترة...");
 
             const coursesMatrix = [];
             let vipCoursesFound = 0;
 
             for (let i = 1; i < rows.length; i++) {
-                const rowValues = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); 
+                const rowValues = rows[i].split(/,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)/); 
                 const course = {};
                 let is_vip_match = false;
-                
                 if (rowValues.every(val => !val.trim())) continue; 
-                
+
                 for (let j = 0; j < headers.length; j++) {
                     const colName = headers[j];
-                    let value = rowValues[j] ? rowValues[j].trim().replace(/^"|"$/g, '') : ''; 
-                    
+                    let value = rowValues[j] ? rowValues[j].trim().replace(/^\"|\"$/g, '') : ''; 
                     course[colName] = value;
-                    
                     if (colName === 'is_vip' && value.toUpperCase() === 'Y') {
                         is_vip_match = true;
                     }
                 }
-                
+
                 if (is_vip_match && course.id && course.title) {
                     coursesMatrix.push(course);
                     vipCoursesFound++;
                 }
             }
-            
+
             appendToDebugLog(`6. إنهاء الفلترة. دورات VIP المقبولة: ${vipCoursesFound}.`);
 
-            // 6. توليد عناصر الـ Checkboxes
+            // توليد عناصر الـ Checkboxes
             coursesListContainer.innerHTML = '';
             if (coursesMatrix.length > 0) {
                 coursesMatrix.forEach(course => {
@@ -164,34 +163,30 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                     coursesListContainer.appendChild(label);
                 });
-                
+
                 courseCheckboxes = coursesListContainer.querySelectorAll('input[type="checkbox"]');
                 courseCheckboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', handleCourseChange);
                 });
                 updateSelectionStatus();
                 appendToDebugLog("7. تم عرض الدورات بنجاح. انتهى التشخيص.", false);
-
             } else {
                 const errorMessage = 'لم يتم العثور على دورات VIP. (تأكد من وجود قيمة **Y** في عمود is_vip).';
                 appendToDebugLog(errorMessage, true);
                 coursesListContainer.innerHTML = `<p class="error-message status-error">⚠️ ${errorMessage}</p>`;
             }
-
         } catch (error) {
             const finalMessage = `❌ فشل فادح في التحليل/الـ DOM. رسالة الخطأ: ${error.message}`;
             appendToDebugLog(finalMessage, true);
-            coursesListContainer.innerHTML = `<p class="error-message status-error" style="font-weight: bold; padding: 10px; border: 1px solid red; background: #ffebeb;">فشل التحليل. راجع سجل التشخيص.</p>`;
-
+            coursesListContainer.innerHTML = `<p class="error-message status-error" style="font-weight: bold; padding: 10px; border: 1px solid red; background: #ffebeb;">فشل التحليل. راجع سجل التشخيص أسفل الصفحة.</p>`;
         } finally {
             if (!courseCheckboxes || courseCheckboxes.length === 0) {
-                 submitButton.disabled = true;
+                submitButton.disabled = true;
             }
         }
     };
-    
-    // ... (بقية دوال النموذج تبقى كما هي) ...
 
+    // بقية دوال النموذج كما هي
     const displayFieldError = (inputElement, message) => {
         const errorElement = document.getElementById(inputElement.id + 'Error');
         if (!errorElement) return;
@@ -228,14 +223,14 @@ document.addEventListener('DOMContentLoaded', () => {
         displayFieldError(input, message);
         return !message;
     };
-    
+
     const validateForm = () => {
         let isFormValid = true;
         form.querySelectorAll('[required]').forEach(input => {
             if (!validateField(input)) isFormValid = false;
         });
         if (!updateSelectionStatus(false)) isFormValid = false; 
-        
+
         if (isFormValid) {
             submitButton.classList.add('ready-to-submit');
             submitButton.disabled = false;
@@ -243,15 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
             submitButton.classList.remove('ready-to-submit');
             submitButton.disabled = true;
         }
-        
         return isFormValid;
     };
-    
+
     const handleCourseChange = (e) => {
         e.target.closest('.course-item').classList.toggle('is-selected', e.target.checked);
         updateSelectionStatus();
     };
-    
+
     const updateSelectionStatus = (updateValidation = true) => {
         if (!courseCheckboxes) return false;
         const checkedCount = Array.from(courseCheckboxes).filter(cb => cb.checked).length;
@@ -267,19 +261,17 @@ document.addEventListener('DOMContentLoaded', () => {
             statusDisplay.textContent = message;
             coursesErrorElement.textContent = (checkedCount === 0) ? 'الرجاء اختيار دورتين على الأقل.' : `تحتاج لاختيار ${MIN_SELECTION - checkedCount} دورة إضافية.`;
             coursesErrorElement.style.display = 'block';
-            
             if (updateValidation) validateForm();
             return false;
         } else {
             statusDisplay.classList.remove('status-error');
             statusDisplay.classList.add('status-success');
             statusDisplay.textContent = `اختيار موفق! تم اختيار ${checkedCount} دورة. أكمل بيانات التسجيل وأرسلها.`;
-            
             if (updateValidation) validateForm();
             return true;
         }
     };
-    
+
     const handleSubmit = async function(e) {
         e.preventDefault(); 
         if (!validateForm()) return; 
@@ -293,7 +285,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(formData); 
         const selectedCourseElements = Array.from(courseCheckboxes).filter(cb => cb.checked);
         const coursesString = [];
-        
         const allFields = {
             'الاسم الكامل': formData.get('الاسم الكامل'),
             'البريد الإلكتروني': formData.get('البريد الإلكتروني'),
@@ -323,11 +314,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (response.status >= 200 && response.status < 300) {
                         result = { success: true, message: "تم افتراض النجاح بناءً على Status 200." };
                     } else {
-                         throw new Error(`فشل الإرسال: الرد غير صالح وحالة السيرفر هي: ${response.status}`);
+                        throw new Error(`فشل الإرسال: الرد غير صالح وحالة السيرفر هي: ${response.status}`);
                     }
                 }
             } catch(e) {
-                 throw new Error("فشل تحليل الرد من السيرفر. (الرجاء التحقق من نشر Google Script)");
+                throw new Error("فشل تحليل الرد من السيرفر. (الرجاء التحقق من نشر Google Script)");
             }
 
             if (!result.success) {
@@ -355,15 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
             submissionMessage.textContent = '❌ حدث خطأ أثناء إرسال البيانات. الرجاء المحاولة مرة أخرى.';
             submissionMessage.style.display = 'block';
             console.error('خطأ في الإرسال:', error.message);
-        } **finally** {
+        } finally {
             submitButton.textContent = 'إرسال التسجيل الآن'; 
             submitButton.disabled = false; 
             submitButton.classList.remove('ready-to-submit'); 
             loadingIndicator.style.display = 'none'; 
         }
-    }
+    };
     form.addEventListener('submit', handleSubmit);
-    
+
     // 6. تهيئة الصفحة
     form.querySelectorAll('[required]').forEach(input => {
         input.addEventListener('input', validateForm); 
