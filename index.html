@@ -3,17 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
   <title>تسجيل عرض الـ VIP: دورتان بسعر واحدة</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <link rel="stylesheet" href="css/Offer.css">
-</head>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. الحصول على جميع متغيرات (معاملات) الرابط
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // 2. قراءة قيمة المعامل المسمى 'title' (وهو اسم العرض)
+        const offerTitle = urlParams.get('title');
+        
+        // 3. تحديد وسم العنوان الرئيسي (h1)
+        const h1Element = document.getElementById('offerTitleHeader');
+        
+        if (offerTitle && h1Element) {
+            // 4. فك ترميز العنوان
+            const decodedTitle = decodeURIComponent(offerTitle);
+            
+            // 5. تحديث محتوى وسم <h1>
+            h1Element.textContent = decodedTitle;
+        } 
+        // ملاحظة: لا يوجد كود لتحديث document.title، لذا سيبقى العنوان كما هو
+    });
+  </script>
+  </head>
 <body>
   <div class="container">
     <img src="images/photo.jpg" alt="شعار مؤسسة كن أنت" class="logo">
-    <h1>عرض الـ VIP: دورتان بسعر واحدة!</h1>
+    
+    <h1 id="offerTitleHeader">عرض الـ VIP: دورتان بسعر واحدة!</h1>
     
     <p class="description">**بناء مستقبلك يبدأ هنا.** احجز مقعدك في العرض الحصري: دورتان تخصصيتان وشهادتان دوليتان معتمدتان، الآن بسعر واحد! انطلق نحو التميز المهني بخطوة واحدة ذكية.</p>
 
@@ -108,7 +132,7 @@
 
   <script src="url.js" defer></script> 
   <script src="js/countries.js" defer></script>
-  
   <script src="js/Offer.js" defer></script>
+  
 </body>
 </html>
